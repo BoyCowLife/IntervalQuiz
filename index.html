@@ -97,6 +97,26 @@
             transform: translateY(-2px);
         }
 
+        .interval-distance-btn {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(34, 197, 94, 0.2);
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .interval-distance-btn:hover {
+            background: rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+        }
+
         .score-container {
             display: flex;
             justify-content: space-between;
@@ -189,13 +209,19 @@
 
         .interval-label {
             width: 100%;
-            padding: 6px 2px;
+            padding: 5px 2px;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px 8px 0 0;
             text-align: center;
             font-weight: bold;
             font-size: 0.8em;
+        }
+
+        .interval-label.double-note {
+            background: rgba(96, 165, 250, 0.15);
+            border-color: rgba(96, 165, 250, 0.3);
+            font-size: 0.9em;
         }
 
         .interval-input {
@@ -239,6 +265,7 @@
             background: rgba(251, 191, 36, 0.3);
             border-color: #fbbf24;
             color: #fbbf24;
+            font-size: 0.85em;
         }
 
         @keyframes shake {
@@ -313,6 +340,13 @@
         .key-btn.accidental {
             background: rgba(167, 139, 250, 0.2);
             border-color: rgba(167, 139, 250, 0.4);
+        }
+
+        .key-btn.interval {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+            padding: 15px;
+            min-width: 45px;
         }
 
         .key-btn.action {
@@ -401,6 +435,10 @@
                 🎲 Scala Casuale
             </button>
         </div>
+
+        <button class="interval-distance-btn" id="intervalDistanceBtn">
+            🎹 Distanza Intervalli
+        </button>
         
         <div class="score-container">
             <span class="scale-name hidden" id="scaleName"></span>
@@ -427,7 +465,7 @@
         <div class="virtual-keyboard" id="virtualKeyboard">
             <div class="current-input" id="currentInput">_</div>
             
-            <div class="keyboard-row">
+            <div class="keyboard-row keyboard-notes hidden">
                 <button class="key-btn note" data-note="C">C</button>
                 <button class="key-btn note" data-note="D">D</button>
                 <button class="key-btn note" data-note="E">E</button>
@@ -437,9 +475,32 @@
                 <button class="key-btn note" data-note="B">B</button>
             </div>
             
-            <div class="keyboard-row">
+            <div class="keyboard-row keyboard-notes hidden">
                 <button class="key-btn accidental" data-note="#">#</button>
                 <button class="key-btn accidental" data-note="b">b</button>
+                <button class="key-btn action" data-action="clear">⌫</button>
+                <button class="key-btn enter" data-action="enter">✓ OK</button>
+            </div>
+
+            <div class="keyboard-row keyboard-intervals">
+                <button class="key-btn interval" data-interval="1">1</button>
+                <button class="key-btn interval" data-interval="b2">b2</button>
+                <button class="key-btn interval" data-interval="2">2</button>
+                <button class="key-btn interval" data-interval="b3">b3</button>
+                <button class="key-btn interval" data-interval="3">3</button>
+                <button class="key-btn interval" data-interval="4">4</button>
+            </div>
+            
+            <div class="keyboard-row keyboard-intervals">
+                <button class="key-btn interval" data-interval="b5">b5</button>
+                <button class="key-btn interval" data-interval="5">5</button>
+                <button class="key-btn interval" data-interval="#5">#5</button>
+                <button class="key-btn interval" data-interval="6">6</button>
+                <button class="key-btn interval" data-interval="b7">b7</button>
+                <button class="key-btn interval" data-interval="7">7</button>
+            </div>
+            
+            <div class="keyboard-row keyboard-intervals">
                 <button class="key-btn action" data-action="clear">⌫</button>
                 <button class="key-btn enter" data-action="enter">✓ OK</button>
             </div>
@@ -472,9 +533,15 @@
             'F#': ['F#', 'G#', 'A#', 'B', 'C#', 'D#', 'E#']
         };
 
+        var chromaticNotes = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'];
         var intervalTypes = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7'];
+        var semitonesMap = {
+            '1': 0, 'b2': 1, '2': 2, 'b3': 3, '3': 4, '4': 5,
+            'b5': 6, '5': 7, '#5': 8, '6': 9, 'b7': 10, '7': 11
+        };
         
         var currentScale = '';
+        var currentMode = 'scale-intervals';
         var totalScore = 0;
         var totalCompleted = 0;
         var quizData = [];
@@ -486,6 +553,7 @@
             var selected = this.value;
             if (selected) {
                 currentScale = selected;
+                currentMode = 'scale-intervals';
                 document.getElementById('startBtn').classList.remove('hidden');
                 document.getElementById('quizArea').innerHTML = 
                     '<div class="start-message">' +
@@ -497,6 +565,7 @@
         document.getElementById('randomBtn').addEventListener('click', function() {
             var keys = Object.keys(scales);
             currentScale = keys[Math.floor(Math.random() * keys.length)];
+            currentMode = 'scale-intervals';
             document.getElementById('scaleSelect').value = currentScale;
             document.getElementById('startBtn').classList.remove('hidden');
             document.getElementById('quizArea').innerHTML = 
@@ -505,14 +574,26 @@
                 '</div>';
         });
 
+        document.getElementById('intervalDistanceBtn').addEventListener('click', function() {
+            currentMode = 'interval-distance';
+            currentScale = '';
+            document.getElementById('scaleSelect').value = '';
+            generateIntervalDistanceQuiz();
+            displayQuiz();
+            document.getElementById('scaleSelector').classList.add('hidden');
+            document.getElementById('intervalDistanceBtn').classList.add('hidden');
+            document.getElementById('navBtns').classList.remove('hidden');
+            document.getElementById('scaleName').textContent = 'Distanza Intervalli';
+            document.getElementById('scaleName').classList.remove('hidden');
+        });
+
         document.getElementById('startBtn').addEventListener('click', function() {
-            generateQuiz();
+            generateScaleQuiz();
             displayQuiz();
             this.classList.add('hidden');
             document.getElementById('navBtns').classList.remove('hidden');
-            
-            // Nasconde il selettore della scala e mostra il nome nella riga dei punteggi
             document.getElementById('scaleSelector').classList.add('hidden');
+            document.getElementById('intervalDistanceBtn').classList.add('hidden');
             document.getElementById('scaleName').textContent = 'Scala: ' + currentScale + ' maggiore';
             document.getElementById('scaleName').classList.remove('hidden');
         });
@@ -528,41 +609,60 @@
             location.reload();
         });
 
+        // Keyboard handlers
         var keyButtons = document.querySelectorAll('.key-btn');
         for (var i = 0; i < keyButtons.length; i++) {
             keyButtons[i].addEventListener('click', function() {
                 if (!currentActiveInput) return;
                 
                 var note = this.dataset.note;
+                var interval = this.dataset.interval;
                 var action = this.dataset.action;
                 
-                if (note) {
-                    if (note === '#' || note === 'b') {
-                        if (currentInputValue.length === 1 && currentInputValue.indexOf('#') === -1 && currentInputValue.indexOf('b') === -1) {
-                            currentInputValue += note;
+                if (currentMode === 'scale-intervals') {
+                    if (note) {
+                        if (note === '#' || note === 'b') {
+                            if (currentInputValue.length === 1 && currentInputValue.indexOf('#') === -1 && currentInputValue.indexOf('b') === -1) {
+                                currentInputValue += note;
+                                updateDisplay();
+                                
+                                clearTimeout(autoAdvanceTimer);
+                                autoAdvanceTimer = setTimeout(function() {
+                                    if (currentActiveInput) {
+                                        var index = parseInt(currentActiveInput.id.split('-')[1]);
+                                        checkAnswer(index);
+                                    }
+                                }, 300);
+                            }
+                        } else {
+                            currentInputValue = note;
                             updateDisplay();
                             
                             clearTimeout(autoAdvanceTimer);
                             autoAdvanceTimer = setTimeout(function() {
-                                if (currentActiveInput) {
+                                if (currentInputValue.length === 1 && currentActiveInput) {
                                     var index = parseInt(currentActiveInput.id.split('-')[1]);
                                     checkAnswer(index);
                                 }
-                            }, 300);
+                            }, 1500);
                         }
-                    } else {
-                        currentInputValue = note;
+                    }
+                } else if (currentMode === 'interval-distance') {
+                    if (interval) {
+                        currentInputValue = interval;
                         updateDisplay();
                         
                         clearTimeout(autoAdvanceTimer);
                         autoAdvanceTimer = setTimeout(function() {
-                            if (currentInputValue.length === 1 && currentActiveInput) {
+                            if (currentActiveInput) {
                                 var index = parseInt(currentActiveInput.id.split('-')[1]);
                                 checkAnswer(index);
                             }
-                        }, 1500);
+                        }, 300);
                     }
-                } else if (action === 'clear') {
+                }
+                
+                if (action === 'clear') {
                     currentInputValue = '';
                     updateDisplay();
                     clearTimeout(autoAdvanceTimer);
@@ -583,7 +683,57 @@
             }
         }
 
-        function generateQuiz() {
+        function getNoteIndex(note) {
+            var noteMap = {
+                'C': 0, 'C#': 1, 'Db': 1, 'D': 2, 'D#': 3, 'Eb': 3,
+                'E': 4, 'F': 5, 'F#': 6, 'Gb': 6, 'G': 7, 'G#': 8,
+                'Ab': 8, 'A': 9, 'A#': 10, 'Bb': 10, 'B': 11
+            };
+            return noteMap[note];
+        }
+
+        function calculateIntervalFromNotes(note1, note2) {
+            var index1 = getNoteIndex(note1);
+            var index2 = getNoteIndex(note2);
+            var semitones = (index2 - index1 + 12) % 12;
+            
+            var intervalMap = {
+                0: '1', 1: 'b2', 2: '2', 3: 'b3', 4: '3', 5: '4',
+                6: 'b5', 7: '5', 8: '#5', 9: '6', 10: 'b7', 11: '7'
+            };
+            
+            return intervalMap[semitones];
+        }
+
+        function getRandomNote() {
+            var notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            return notes[Math.floor(Math.random() * notes.length)];
+        }
+
+        function generateIntervalDistanceQuiz() {
+            quizData = [];
+            for (var i = 0; i < 100; i++) {
+                var note1 = getRandomNote();
+                var note2 = getRandomNote();
+                while (note1 === note2) {
+                    note2 = getRandomNote();
+                }
+                
+                var interval = calculateIntervalFromNotes(note1, note2);
+                var semitones = semitonesMap[interval];
+                
+                quizData.push({
+                    note1: note1,
+                    note2: note2,
+                    answer: interval,
+                    semitones: semitones,
+                    userAnswer: '',
+                    completed: false
+                });
+            }
+        }
+
+        function generateScaleQuiz() {
             quizData = [];
             for (var i = 0; i < 100; i++) {
                 var interval = intervalTypes[Math.floor(Math.random() * intervalTypes.length)];
@@ -646,7 +796,13 @@
                 
                 var label = document.createElement('div');
                 label.className = 'interval-label';
-                label.textContent = quiz.interval;
+                
+                if (currentMode === 'scale-intervals') {
+                    label.textContent = quiz.interval;
+                } else {
+                    label.className += ' double-note';
+                    label.textContent = quiz.note1 + ' → ' + quiz.note2;
+                }
                 
                 var input = document.createElement('div');
                 input.className = 'interval-input';
@@ -669,6 +825,26 @@
             
             area.appendChild(grid);
             document.getElementById('virtualKeyboard').style.display = 'block';
+            
+            // Show/hide appropriate keyboard
+            var noteKeyboards = document.querySelectorAll('.keyboard-notes');
+            var intervalKeyboards = document.querySelectorAll('.keyboard-intervals');
+            
+            if (currentMode === 'scale-intervals') {
+                for (var j = 0; j < noteKeyboards.length; j++) {
+                    noteKeyboards[j].classList.remove('hidden');
+                }
+                for (var k = 0; k < intervalKeyboards.length; k++) {
+                    intervalKeyboards[k].classList.add('hidden');
+                }
+            } else {
+                for (var j = 0; j < noteKeyboards.length; j++) {
+                    noteKeyboards[j].classList.add('hidden');
+                }
+                for (var k = 0; k < intervalKeyboards.length; k++) {
+                    intervalKeyboards[k].classList.remove('hidden');
+                }
+            }
             
             setTimeout(function() {
                 var firstInput = document.getElementById('input-0');
@@ -696,22 +872,27 @@
             var input = document.getElementById('input-' + index);
             var userAnswer = currentInputValue.trim();
             var correct = quizData[index].answer;
+            var isCorrect = false;
             
-            var enharmonics = {
-                'C#': 'Db', 'Db': 'C#',
-                'D#': 'Eb', 'Eb': 'D#',
-                'F#': 'Gb', 'Gb': 'F#',
-                'G#': 'Ab', 'Ab': 'G#',
-                'A#': 'Bb', 'Bb': 'A#',
-                'E#': 'F', 'F': 'E#',
-                'B#': 'C', 'C': 'B#',
-                'Cb': 'B', 'B': 'Cb',
-                'Fb': 'E', 'E': 'Fb'
-            };
-            
-            var isCorrect = userAnswer === correct || 
+            if (currentMode === 'scale-intervals') {
+                var enharmonics = {
+                    'C#': 'Db', 'Db': 'C#',
+                    'D#': 'Eb', 'Eb': 'D#',
+                    'F#': 'Gb', 'Gb': 'F#',
+                    'G#': 'Ab', 'Ab': 'G#',
+                    'A#': 'Bb', 'Bb': 'A#',
+                    'E#': 'F', 'F': 'E#',
+                    'B#': 'C', 'C': 'B#',
+                    'Cb': 'B', 'B': 'Cb',
+                    'Fb': 'E', 'E': 'Fb'
+                };
+                
+                isCorrect = userAnswer === correct || 
                            (enharmonics[userAnswer] === correct) || 
                            (enharmonics[correct] === userAnswer);
+            } else {
+                isCorrect = userAnswer === correct;
+            }
             
             if (isCorrect) {
                 input.classList.add('correct');
@@ -724,7 +905,11 @@
                 setTimeout(function() {
                     input.classList.remove('incorrect');
                     input.classList.add('show-answer');
-                    input.textContent = correct;
+                    if (currentMode === 'interval-distance') {
+                        input.textContent = correct + ' (' + quizData[index].semitones + ' st)';
+                    } else {
+                        input.textContent = correct;
+                    }
                 }, 1000);
             }
             
