@@ -137,10 +137,10 @@
 
         .quiz-area {
             min-height: 200px;
-            max-height: calc(100vh - 400px);
+            max-height: calc(100vh - 500px);
             overflow-y: auto;
             padding: 20px 10px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .start-message {
@@ -185,28 +185,41 @@
             font-size: 1em;
             font-weight: bold;
             transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .interval-input:focus {
-            outline: none;
+        .interval-input.active {
             background: rgba(96, 165, 250, 0.2);
             border-color: #60a5fa;
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
         }
 
         .interval-input.correct {
             background: rgba(34, 197, 94, 0.3);
             border-color: #22c55e;
+            color: #22c55e;
         }
 
         .interval-input.incorrect {
             background: rgba(239, 68, 68, 0.3);
             border-color: #ef4444;
+            animation: shake 0.5s ease;
         }
 
         .interval-input.show-answer {
             background: rgba(251, 191, 36, 0.3);
             border-color: #fbbf24;
             color: #fbbf24;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         .start-btn {
@@ -226,6 +239,78 @@
         .start-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(96, 165, 250, 0.3);
+        }
+
+        .virtual-keyboard {
+            display: none;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .key-btn {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 50px;
+        }
+
+        .key-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .key-btn:active {
+            transform: translateY(0);
+            background: rgba(96, 165, 250, 0.3);
+        }
+
+        .key-btn.note {
+            background: rgba(96, 165, 250, 0.2);
+            border-color: rgba(96, 165, 250, 0.4);
+        }
+
+        .key-btn.accidental {
+            background: rgba(167, 139, 250, 0.2);
+            border-color: rgba(167, 139, 250, 0.4);
+        }
+
+        .key-btn.action {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .key-btn.enter {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.4);
+            padding: 15px 30px;
+        }
+
+        .current-input {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+            color: #60a5fa;
+            min-height: 40px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 2px solid rgba(96, 165, 250, 0.3);
         }
 
         .nav-btns {
@@ -315,6 +400,27 @@
             🚀 Inizia Quiz
         </button>
 
+        <div class="virtual-keyboard" id="virtualKeyboard">
+            <div class="current-input" id="currentInput">_</div>
+            
+            <div class="keyboard-row">
+                <button class="key-btn note" data-note="C">C</button>
+                <button class="key-btn note" data-note="D">D</button>
+                <button class="key-btn note" data-note="E">E</button>
+                <button class="key-btn note" data-note="F">F</button>
+                <button class="key-btn note" data-note="G">G</button>
+                <button class="key-btn note" data-note="A">A</button>
+                <button class="key-btn note" data-note="B">B</button>
+            </div>
+            
+            <div class="keyboard-row">
+                <button class="key-btn accidental" data-note="#">#</button>
+                <button class="key-btn accidental" data-note="b">b</button>
+                <button class="key-btn action" data-action="clear">⌫</button>
+                <button class="key-btn enter" data-action="enter">✓ OK</button>
+            </div>
+        </div>
+
         <div class="nav-btns hidden" id="navBtns">
             <button class="nav-btn back-btn" id="backBtn">
                 ← Torna al Menu
@@ -326,8 +432,7 @@
     </div>
 
     <script>
-        // Scale maggiori
-        const scales = {
+        var scales = {
             'C': ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
             'G': ['G', 'A', 'B', 'C', 'D', 'E', 'F#'],
             'D': ['D', 'E', 'F#', 'G', 'A', 'B', 'C#'],
@@ -343,43 +448,41 @@
             'F#': ['F#', 'G#', 'A#', 'B', 'C#', 'D#', 'E#']
         };
 
-        const intervalTypes = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7'];
+        var intervalTypes = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7'];
         
-        let currentScale = '';
-        let totalScore = 0;
-        let totalCompleted = 0;
-        let quizData = [];
+        var currentScale = '';
+        var totalScore = 0;
+        var totalCompleted = 0;
+        var quizData = [];
+        var currentActiveInput = null;
+        var currentInputValue = '';
+        var autoAdvanceTimer = null;
 
-        // Selezione scala dal dropdown
         document.getElementById('scaleSelect').addEventListener('change', function() {
-            const selected = this.value;
+            var selected = this.value;
             if (selected) {
                 currentScale = selected;
                 document.getElementById('currentScale').textContent = currentScale;
                 document.getElementById('startBtn').classList.remove('hidden');
-                document.getElementById('quizArea').innerHTML = `
-                    <div class="start-message">
-                        Premi "Inizia Quiz" per cominciare con la scala di ${currentScale} maggiore
-                    </div>
-                `;
+                document.getElementById('quizArea').innerHTML = 
+                    '<div class="start-message">' +
+                        'Premi "Inizia Quiz" per cominciare con la scala di ' + currentScale + ' maggiore' +
+                    '</div>';
             }
         });
 
-        // Scala casuale
         document.getElementById('randomBtn').addEventListener('click', function() {
-            const keys = Object.keys(scales);
+            var keys = Object.keys(scales);
             currentScale = keys[Math.floor(Math.random() * keys.length)];
             document.getElementById('scaleSelect').value = currentScale;
             document.getElementById('currentScale').textContent = currentScale;
             document.getElementById('startBtn').classList.remove('hidden');
-            document.getElementById('quizArea').innerHTML = `
-                <div class="start-message">
-                    Premi "Inizia Quiz" per cominciare con la scala di ${currentScale} maggiore
-                </div>
-            `;
+            document.getElementById('quizArea').innerHTML = 
+                '<div class="start-message">' +
+                    'Premi "Inizia Quiz" per cominciare con la scala di ' + currentScale + ' maggiore' +
+                '</div>';
         });
 
-        // Inizia quiz
         document.getElementById('startBtn').addEventListener('click', function() {
             generateQuiz();
             displayQuiz();
@@ -387,23 +490,76 @@
             document.getElementById('navBtns').classList.remove('hidden');
         });
 
-        // Torna al menu
         document.getElementById('backBtn').addEventListener('click', function() {
             if (confirm('Vuoi tornare al menu? Perderai i progressi attuali.')) {
                 location.reload();
             }
         });
 
-        // Termina quiz
         document.getElementById('completeBtn').addEventListener('click', function() {
-            alert(`Quiz completato!\nPunteggio: ${totalScore}/100\nPercentuale: ${totalScore}%`);
+            alert('Quiz completato!\nPunteggio: ' + totalScore + '/100\nPercentuale: ' + totalScore + '%');
             location.reload();
         });
 
+        var keyButtons = document.querySelectorAll('.key-btn');
+        for (var i = 0; i < keyButtons.length; i++) {
+            keyButtons[i].addEventListener('click', function() {
+                if (!currentActiveInput) return;
+                
+                var note = this.dataset.note;
+                var action = this.dataset.action;
+                
+                if (note) {
+                    if (note === '#' || note === 'b') {
+                        if (currentInputValue.length === 1 && currentInputValue.indexOf('#') === -1 && currentInputValue.indexOf('b') === -1) {
+                            currentInputValue += note;
+                            updateDisplay();
+                            
+                            clearTimeout(autoAdvanceTimer);
+                            autoAdvanceTimer = setTimeout(function() {
+                                if (currentActiveInput) {
+                                    var index = parseInt(currentActiveInput.id.split('-')[1]);
+                                    checkAnswer(index);
+                                }
+                            }, 300);
+                        }
+                    } else {
+                        currentInputValue = note;
+                        updateDisplay();
+                        
+                        clearTimeout(autoAdvanceTimer);
+                        autoAdvanceTimer = setTimeout(function() {
+                            if (currentInputValue.length === 1 && currentActiveInput) {
+                                var index = parseInt(currentActiveInput.id.split('-')[1]);
+                                checkAnswer(index);
+                            }
+                        }, 1500);
+                    }
+                } else if (action === 'clear') {
+                    currentInputValue = '';
+                    updateDisplay();
+                    clearTimeout(autoAdvanceTimer);
+                } else if (action === 'enter') {
+                    if (currentInputValue && currentActiveInput) {
+                        clearTimeout(autoAdvanceTimer);
+                        var index = parseInt(currentActiveInput.id.split('-')[1]);
+                        checkAnswer(index);
+                    }
+                }
+            });
+        }
+
+        function updateDisplay() {
+            document.getElementById('currentInput').textContent = currentInputValue || '_';
+            if (currentActiveInput) {
+                currentActiveInput.textContent = currentInputValue;
+            }
+        }
+
         function generateQuiz() {
             quizData = [];
-            for (let i = 0; i < 100; i++) {
-                const interval = intervalTypes[Math.floor(Math.random() * intervalTypes.length)];
+            for (var i = 0; i < 100; i++) {
+                var interval = intervalTypes[Math.floor(Math.random() * intervalTypes.length)];
                 quizData.push({
                     interval: interval,
                     answer: calculateInterval(currentScale, interval),
@@ -414,112 +570,162 @@
         }
 
         function calculateInterval(scaleName, interval) {
-            const scale = scales[scaleName];
-            const mapping = {
-                '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6,
-                'b2': 1, 'b3': 2, 'b5': 4, '#5': 4, 'b7': 6
-            };
+            var scale = scales[scaleName];
             
-            const degree = mapping[interval];
-            let note = scale[degree];
+            if (interval === '1') return scale[0];
+            if (interval === '2') return scale[1];
+            if (interval === '3') return scale[2];
+            if (interval === '4') return scale[3];
+            if (interval === '5') return scale[4];
+            if (interval === '6') return scale[5];
+            if (interval === '7') return scale[6];
             
-            // Applica alterazioni
-            if (interval.includes('b') && interval !== '1') {
-                note = flatNote(scale[degree]);
-            } else if (interval === '#5') {
-                note = sharpNote(scale[4]);
-            }
+            if (interval === 'b2') return flatNote(scale[1]);
+            if (interval === 'b3') return flatNote(scale[2]);
+            if (interval === 'b5') return flatNote(scale[4]);
+            if (interval === '#5') return sharpNote(scale[4]);
+            if (interval === 'b7') return flatNote(scale[6]);
             
-            return note;
+            return scale[0];
         }
 
         function sharpNote(note) {
-            if (note.includes('#')) return note[0] + '##';
-            if (note.includes('b')) return note[0];
+            if (note.indexOf('#') !== -1) return note.charAt(0) + '##';
+            if (note.indexOf('b') !== -1) return note.charAt(0);
             if (note === 'E') return 'F';
             if (note === 'B') return 'C';
             return note + '#';
         }
 
         function flatNote(note) {
-            if (note.includes('b')) return note[0] + 'bb';
-            if (note.includes('#')) return note[0];
+            if (note.indexOf('b') !== -1) return note.charAt(0) + 'bb';
+            if (note.indexOf('#') !== -1) return note.charAt(0);
             if (note === 'C') return 'B';
             if (note === 'F') return 'E';
             return note + 'b';
         }
 
         function displayQuiz() {
-            const area = document.getElementById('quizArea');
+            var area = document.getElementById('quizArea');
             area.innerHTML = '';
             
-            const grid = document.createElement('div');
+            var grid = document.createElement('div');
             grid.className = 'intervals-grid';
             
-            quizData.forEach((quiz, index) => {
-                const group = document.createElement('div');
+            for (var i = 0; i < quizData.length; i++) {
+                var quiz = quizData[i];
+                var group = document.createElement('div');
                 group.className = 'interval-group';
                 
-                const label = document.createElement('div');
+                var label = document.createElement('div');
                 label.className = 'interval-label';
                 label.textContent = quiz.interval;
                 
-                const input = document.createElement('input');
+                var input = document.createElement('div');
                 input.className = 'interval-input';
-                input.type = 'text';
-                input.maxLength = 4;
-                input.id = `input-${index}`;
+                input.id = 'input-' + i;
+                input.textContent = '';
+                input.tabIndex = 0;
                 
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && this.value) {
-                        checkAnswer(index);
-                    }
-                });
+                input.addEventListener('click', (function(index) {
+                    return function() {
+                        if (!quizData[index].completed) {
+                            activateInput(this, index);
+                        }
+                    };
+                })(i));
                 
                 group.appendChild(label);
                 group.appendChild(input);
                 grid.appendChild(group);
-            });
+            }
             
             area.appendChild(grid);
-            document.getElementById('input-0').focus();
+            document.getElementById('virtualKeyboard').style.display = 'block';
+            
+            setTimeout(function() {
+                var firstInput = document.getElementById('input-0');
+                if (firstInput) {
+                    activateInput(firstInput, 0);
+                }
+            }, 100);
+        }
+
+        function activateInput(input, index) {
+            var inputs = document.querySelectorAll('.interval-input');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].classList.remove('active');
+            }
+            
+            if (!quizData[index].completed) {
+                input.classList.add('active');
+                currentActiveInput = input;
+                currentInputValue = input.textContent || '';
+                document.getElementById('currentInput').textContent = currentInputValue || '_';
+            }
         }
 
         function checkAnswer(index) {
-            const input = document.getElementById(`input-${index}`);
-            const userAnswer = input.value.toUpperCase();
-            const correct = quizData[index].answer;
+            var input = document.getElementById('input-' + index);
+            var userAnswer = currentInputValue.trim();
+            var correct = quizData[index].answer;
             
-            if (userAnswer === correct) {
+            var enharmonics = {
+                'C#': 'Db', 'Db': 'C#',
+                'D#': 'Eb', 'Eb': 'D#',
+                'F#': 'Gb', 'Gb': 'F#',
+                'G#': 'Ab', 'Ab': 'G#',
+                'A#': 'Bb', 'Bb': 'A#',
+                'E#': 'F', 'F': 'E#',
+                'B#': 'C', 'C': 'B#',
+                'Cb': 'B', 'B': 'Cb',
+                'Fb': 'E', 'E': 'Fb'
+            };
+            
+            var isCorrect = userAnswer === correct || 
+                           (enharmonics[userAnswer] === correct) || 
+                           (enharmonics[correct] === userAnswer);
+            
+            if (isCorrect) {
                 input.classList.add('correct');
+                input.classList.remove('active');
                 totalScore++;
                 document.getElementById('score').textContent = totalScore;
             } else {
                 input.classList.add('incorrect');
-                setTimeout(() => {
+                input.classList.remove('active');
+                setTimeout(function() {
                     input.classList.remove('incorrect');
                     input.classList.add('show-answer');
-                    input.value = correct;
+                    input.textContent = correct;
                 }, 1000);
             }
             
-            input.disabled = true;
             quizData[index].completed = true;
             totalCompleted++;
+            currentActiveInput = null;
+            currentInputValue = '';
+            document.getElementById('currentInput').textContent = '_';
             
             document.getElementById('completed').textContent = totalCompleted;
             document.getElementById('progressFill').style.width = totalCompleted + '%';
             
             if (totalCompleted === 100) {
                 document.getElementById('completeBtn').disabled = false;
+                document.getElementById('virtualKeyboard').style.display = 'none';
             } else {
-                // Focus sul prossimo
-                const nextIndex = index + 1;
-                if (nextIndex < 100 && document.getElementById(`input-${nextIndex}`)) {
-                    setTimeout(() => {
-                        document.getElementById(`input-${nextIndex}`).focus();
-                    }, 500);
-                }
+                setTimeout(function() {
+                    for (var i = index + 1; i < 100; i++) {
+                        if (!quizData[i].completed) {
+                            var nextInput = document.getElementById('input-' + i);
+                            if (nextInput) {
+                                activateInput(nextInput, i);
+                                nextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                break;
+                            }
+                        }
+                    }
+                }, 500);
             }
         }
     </script>
