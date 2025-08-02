@@ -5,9 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="IntervalQuiz">
-    <meta name="theme-color" content="#1e293b">
-    <title>IntervalQuiz - Scale Intervals Trainer</title>
+    <meta name="apple-mobile-web-app-title" content="Intervalli Quiz">
+    <meta name="theme-color" content="#047857">
+    
+    <!-- Icona per iOS -->
+    <link rel="apple-touch-icon" href="data:image/png;base64,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<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA Configuration -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Intervalli Quiz">
+    <meta name="application-name" content="Intervalli Quiz">
+    <meta name="theme-color" content="#047857">
+    <meta name="msapplication-TileColor" content="#047857">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="icons/icon-76.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/icon-120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+    
+    <!-- Standard Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Splash Screens for iOS -->
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="splash/splash-1125x2436.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="splash/splash-828x1792.png">
+    
+    <title>Intervalli Quiz - Allena il tuo orecchio musicale</title>
     
     <style>
         * {
@@ -19,12 +54,14 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            background: linear-gradient(135deg, #047857 0%, #10b981 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px 10px;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
             color: white;
             overflow-x: hidden;
         }
@@ -32,7 +69,7 @@
         .container {
             width: 100%;
             max-width: 600px;
-            background: rgba(30, 41, 59, 0.95);
+            background: rgba(6, 78, 59, 0.95);
             border-radius: 20px;
             padding: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
@@ -43,7 +80,7 @@
             text-align: center;
             font-size: 1.8em;
             margin-bottom: 20px;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            background: linear-gradient(135deg, #34d399, #10b981);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -70,6 +107,24 @@
             cursor: pointer;
             transition: all 0.3s ease;
             height: 46px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .scale-select:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .scale-select:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
         .scale-select option {
@@ -79,7 +134,6 @@
 
         .btn {
             flex: 1;
-            min-width: 150px;
             padding: 12px;
             background: rgba(167, 139, 250, 0.2);
             border: 2px solid rgba(167, 139, 250, 0.4);
@@ -89,6 +143,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: bold;
+            height: 46px;
         }
 
         .btn:hover {
@@ -130,7 +185,7 @@
         }
 
         .scale-name {
-            color: #60a5fa;
+            color: #34d399;
             font-weight: bold;
             font-size: 1.1em;
         }
@@ -276,7 +331,7 @@
         .start-btn {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            background: linear-gradient(135deg, #10b981, #059669);
             border: none;
             border-radius: 10px;
             color: white;
@@ -289,41 +344,45 @@
 
         .start-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(96, 165, 250, 0.3);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
         }
 
         .virtual-keyboard {
             display: none;
-            margin: 15px 0;
-            padding: 12px;
+            margin: 10px 0;
+            padding: 10px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .keyboard-row {
             display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 6px;
+            margin-bottom: 6px;
             justify-content: center;
+        }
+        
+        .keyboard-row:last-child {
+            margin-bottom: 0;
         }
 
         .key-btn {
-            padding: 12px 15px;
+            padding: 8px 10px;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            border-radius: 6px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
-            min-width: 45px;
+            min-width: 38px;
         }
 
         .key-btn:hover {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .key-btn:active {
@@ -334,47 +393,50 @@
         .key-btn.note {
             background: rgba(96, 165, 250, 0.2);
             border-color: rgba(96, 165, 250, 0.4);
-            padding: 10px 12px;
-            min-width: 40px;
-            font-size: 15px;
+            padding: 8px 10px;
+            min-width: 35px;
+            font-size: 13px;
         }
 
         .key-btn.accidental {
             background: rgba(167, 139, 250, 0.2);
             border-color: rgba(167, 139, 250, 0.4);
-            padding: 10px 12px;
-            min-width: 40px;
-            font-size: 15px;
+            padding: 8px 10px;
+            min-width: 35px;
+            font-size: 13px;
         }
 
         .key-btn.interval {
             background: rgba(34, 197, 94, 0.2);
             border-color: rgba(34, 197, 94, 0.4);
-            padding: 12px;
-            min-width: 42px;
+            padding: 8px;
+            min-width: 36px;
+            font-size: 13px;
         }
 
         .key-btn.action {
             background: rgba(239, 68, 68, 0.2);
             border-color: rgba(239, 68, 68, 0.4);
-            padding: 10px 12px;
+            padding: 8px 10px;
+            font-size: 13px;
         }
 
         .key-btn.enter {
             background: rgba(34, 197, 94, 0.2);
             border-color: rgba(34, 197, 94, 0.4);
-            padding: 12px 20px;
+            padding: 8px 15px;
+            font-size: 13px;
         }
 
         .current-input {
             text-align: center;
-            margin-bottom: 12px;
-            font-size: 22px;
+            margin-bottom: 10px;
+            font-size: 20px;
             color: #60a5fa;
-            min-height: 36px;
-            padding: 8px;
+            min-height: 32px;
+            padding: 6px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            border-radius: 6px;
             border: 2px solid rgba(96, 165, 250, 0.3);
         }
 
@@ -416,7 +478,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎵 IntervalQuiz</h1>
+        <h1>🎵 Intervalli Quiz</h1>
         
         <div class="scale-selector" id="scaleSelector">
             <div class="scale-select-wrapper">
