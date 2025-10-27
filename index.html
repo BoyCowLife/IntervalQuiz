@@ -591,6 +591,12 @@
                 <button class="key-btn interval" data-interval="5">5</button>
                 <button class="key-btn interval" data-interval="6">6</button>
                 <button class="key-btn interval" data-interval="7">7</button>
+            
+            <div class="keyboard-row keyboard-intervals keyboard-extended" style="display: none;">
+                <button class="key-btn interval" data-interval="9">9</button>
+                <button class="key-btn interval" data-interval="11">11</button>
+                <button class="key-btn interval" data-interval="13">13</button>
+            </div>
             </div>
         </div>
 
@@ -619,10 +625,17 @@
         };
 
         var chromaticNotes = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'];
-        var intervalTypes = ['1', '2', '3', '4', '5', '6', '7'];
+        var baseIntervals = ['1', '2', '3', '4', '5', '6', '7'];
+        var extendedIntervals = ['1', '2', '3', '4', '5', '6', '7', '9', '11', '13'];
         var semitonesMap = {
-            '1': 0, '2': 2, '3': 4, '4': 5, '5': 7, '6': 9, '7': 11
+            '1': 0, '2': 2, '3': 4, '4': 5, '5': 7, '6': 9, '7': 11,
+            '9': 2, '11': 5, '13': 9
         };
+        
+        function getIntervalTypes() {
+            var checkbox = document.getElementById('extendedIntervalsCheck');
+            return checkbox && checkbox.checked ? extendedIntervals : baseIntervals;
+        }
         
         var currentScale = '';
         var currentMode = 'scale-intervals';
@@ -671,6 +684,7 @@
             displayQuiz();
             document.getElementById('scaleSelector').classList.add('hidden');
             document.getElementById('intervalDistanceBtn').classList.add('hidden');
+            document.getElementById('optionsContainer').classList.add('hidden');
             document.getElementById('navBtns').classList.remove('hidden');
             document.getElementById('scaleName').textContent = 'Distanza Intervalli';
             document.getElementById('scaleName').classList.remove('hidden');
@@ -688,12 +702,21 @@
             document.getElementById('navBtns').classList.remove('hidden');
             document.getElementById('scaleSelector').classList.add('hidden');
             document.getElementById('intervalDistanceBtn').classList.add('hidden');
+            document.getElementById('optionsContainer').classList.add('hidden');
             document.getElementById('scaleName').textContent = 'Scala: ' + currentScale + ' maggiore';
             document.getElementById('scaleName').classList.remove('hidden');
         });
 
         document.getElementById('backBtn').addEventListener('click', function() {
             location.reload();
+
+        // Extended intervals checkbox handler
+        document.getElementById('extendedIntervalsCheck').addEventListener('change', function() {
+            var extendedRow = document.querySelector('.keyboard-extended');
+            if (extendedRow) {
+                extendedRow.style.display = this.checked ? 'flex' : 'none';
+            }
+        });
         });
 
 
@@ -824,7 +847,8 @@
         function generateScaleQuiz() {
             quizData = [];
             for (var i = 0; i < 100; i++) {
-                var interval = intervalTypes[Math.floor(Math.random() * intervalTypes.length)];
+                var intervals = getIntervalTypes();
+                var interval = intervals[Math.floor(Math.random() * intervals.length)];
                 quizData.push({
                     interval: interval,
                     answer: calculateInterval(currentScale, interval),
@@ -844,6 +868,10 @@
             if (interval === '5') return scale[4];
             if (interval === '6') return scale[5];
             if (interval === '7') return scale[6];
+            
+            if (interval === '9') return scale[1];
+            if (interval === '11') return scale[3];
+            if (interval === '13') return scale[5];
             
             if (interval === 'b2') return flatNote(scale[1]);
             if (interval === 'b3') return flatNote(scale[2]);
