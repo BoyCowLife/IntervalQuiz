@@ -165,6 +165,30 @@
             font-weight: bold;
         }
 
+        .options-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            color: white;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #10b981;
+        }
+
         .interval-distance-btn:hover {
             background: rgba(34, 197, 94, 0.3);
             transform: translateY(-2px);
@@ -508,6 +532,13 @@
         <button class="interval-distance-btn" id="intervalDistanceBtn">
             🎹 Distanza Intervalli
         </button>
+
+        <div class="options-container" id="optionsContainer">
+            <label class="checkbox-label">
+                <input type="checkbox" id="extendedIntervalsCheck">
+                <span>Includi intervalli estesi (9, 11, 13)</span>
+            </label>
+        </div>
         
         <div class="score-container">
             <span class="scale-name hidden" id="scaleName"></span>
@@ -566,9 +597,6 @@
         <div class="nav-btns hidden" id="navBtns">
             <button class="nav-btn back-btn" id="backBtn">
                 ← Torna al Menu
-            </button>
-            <button class="nav-btn complete-btn" id="completeBtn" disabled>
-                Termina Quiz
             </button>
         </div>
     </div>
@@ -665,15 +693,9 @@
         });
 
         document.getElementById('backBtn').addEventListener('click', function() {
-            if (confirm('Vuoi tornare al menu? Perderai i progressi attuali.')) {
-                location.reload();
-            }
-        });
-
-        document.getElementById('completeBtn').addEventListener('click', function() {
-            alert('Quiz completato!\nPunteggio: ' + totalScore + '/100\nPercentuale: ' + totalScore + '%');
             location.reload();
         });
+
 
         // Keyboard handlers
         var keyButtons = document.querySelectorAll('.key-btn');
@@ -989,7 +1011,6 @@
             document.getElementById('progressFill').style.width = totalCompleted + '%';
             
             if (totalCompleted === 100) {
-                document.getElementById('completeBtn').disabled = false;
                 document.getElementById('virtualKeyboard').style.display = 'none';
             } else {
                 setTimeout(function() {
