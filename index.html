@@ -399,11 +399,12 @@
         }
 
         .key-btn.accidental {
-            background: rgba(167, 139, 250, 0.2);
-            border-color: rgba(167, 139, 250, 0.4);
-            padding: 8px 10px;
-            min-width: 35px;
-            font-size: 13px;
+            background: rgba(251, 191, 36, 0.3);
+            border-color: rgba(251, 191, 36, 0.5);
+            padding: 10px 15px;
+            font-size: 16px;
+            min-width: 80px;
+            min-height: 42px;
         }
 
         .key-btn.interval {
@@ -546,31 +547,19 @@
             <div class="keyboard-row keyboard-notes hidden">
                 <button class="key-btn accidental" data-note="#">#</button>
                 <button class="key-btn accidental" data-note="b">b</button>
-                <button class="key-btn action" data-action="clear">⌫</button>
-                <button class="key-btn enter" data-action="enter">✓ OK</button>
             </div>
 
             <div class="keyboard-row keyboard-intervals">
                 <button class="key-btn interval" data-interval="1">1</button>
-                <button class="key-btn interval" data-interval="b2">b2</button>
                 <button class="key-btn interval" data-interval="2">2</button>
-                <button class="key-btn interval" data-interval="b3">b3</button>
                 <button class="key-btn interval" data-interval="3">3</button>
                 <button class="key-btn interval" data-interval="4">4</button>
             </div>
             
             <div class="keyboard-row keyboard-intervals">
-                <button class="key-btn interval" data-interval="b5">b5</button>
                 <button class="key-btn interval" data-interval="5">5</button>
-                <button class="key-btn interval" data-interval="#5">#5</button>
                 <button class="key-btn interval" data-interval="6">6</button>
-                <button class="key-btn interval" data-interval="b7">b7</button>
                 <button class="key-btn interval" data-interval="7">7</button>
-            </div>
-            
-            <div class="keyboard-row keyboard-intervals">
-                <button class="key-btn action" data-action="clear">⌫</button>
-                <button class="key-btn enter" data-action="enter">✓ OK</button>
             </div>
         </div>
 
@@ -602,10 +591,9 @@
         };
 
         var chromaticNotes = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'];
-        var intervalTypes = ['1', 'b2', '2', 'b3', '3', '4', 'b5', '5', '#5', '6', 'b7', '7'];
+        var intervalTypes = ['1', '2', '3', '4', '5', '6', '7'];
         var semitonesMap = {
-            '1': 0, 'b2': 1, '2': 2, 'b3': 3, '3': 4, '4': 5,
-            'b5': 6, '5': 7, '#5': 8, '6': 9, 'b7': 10, '7': 11
+            '1': 0, '2': 2, '3': 4, '4': 5, '5': 7, '6': 9, '7': 11
         };
         
         var currentScale = '';
