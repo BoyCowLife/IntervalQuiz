@@ -581,7 +581,6 @@
             </div>
 
             <div class="keyboard-row keyboard-intervals">
-                <button class="key-btn interval" data-interval="1">1</button>
                 <button class="key-btn interval" data-interval="2">2</button>
                 <button class="key-btn interval" data-interval="3">3</button>
                 <button class="key-btn interval" data-interval="4">4</button>
@@ -625,8 +624,8 @@
         };
 
         var chromaticNotes = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'];
-        var baseIntervals = ['1', '2', '3', '4', '5', '6', '7'];
-        var extendedIntervals = ['1', '2', '3', '4', '5', '6', '7', '9', '11', '13'];
+        var baseIntervals = ['2', '3', '4', '5', '6', '7'];
+        var extendedIntervals = ['2', '3', '4', '5', '6', '7', '9', '11', '13'];
         var semitonesMap = {
             '1': 0, '2': 2, '3': 4, '4': 5, '5': 7, '6': 9, '7': 11,
             '9': 2, '11': 5, '13': 9
@@ -846,9 +845,15 @@
 
         function generateScaleQuiz() {
             quizData = [];
+            var lastInterval = null;
             for (var i = 0; i < 100; i++) {
                 var intervals = getIntervalTypes();
-                var interval = intervals[Math.floor(Math.random() * intervals.length)];
+                var interval;
+                do {
+                    interval = intervals[Math.floor(Math.random() * intervals.length)];
+                } while (interval === lastInterval);
+                
+                lastInterval = interval;
                 quizData.push({
                     interval: interval,
                     answer: calculateInterval(currentScale, interval),
